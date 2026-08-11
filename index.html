@@ -25,6 +25,59 @@
 <body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex">
 
   <!-- ================================================================== -->
+  <!-- ADMIN LOGIN MODAL SCREEN                                           -->
+  <!-- ================================================================== -->
+  <div id="admin-login-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-indigo-950/50 space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-600/30 text-2xl font-black">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <h2 class="text-2xl font-black text-white tracking-tight">SuperMart Admin Portal</h2>
+        <p class="text-xs text-slate-400">Secure Shop Management & POS Control System</p>
+      </div>
+
+      <form id="admin-login-form" onsubmit="handleAdminLoginSubmitEvent(event)" class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Admin Username / Email</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+              <i class="fa-solid fa-user-shield"></i>
+            </span>
+            <input type="text" id="admin-login-username" required placeholder="admin or admin@supermart.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 pl-10 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition" />
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="admin-login-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 pl-10 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition" />
+          </div>
+        </div>
+
+        <div class="bg-indigo-950/40 border border-indigo-500/20 p-3.5 rounded-xl text-xs text-indigo-300 space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-info"></i> Default Credentials:
+          </div>
+          <div class="text-slate-400">Username: <span class="font-mono text-white font-semibold">admin</span></div>
+          <div class="text-slate-400">Password: <span class="font-mono text-white font-semibold">admin123</span></div>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 text-sm">
+          <i class="fa-solid fa-right-to-bracket"></i> <span>Login to Admin Panel</span>
+        </button>
+      </form>
+
+      <div class="text-center text-[11px] text-slate-500">
+        SuperMart Retail Store Management System v2.5
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================== -->
   <!-- SIDEBAR NAVIGATION DRAWER                                          -->
   <!-- ================================================================== -->
   <aside id="app-sidebar" class="w-64 bg-slate-900/95 border-r border-slate-800/80 flex flex-col justify-between fixed lg:static inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out">

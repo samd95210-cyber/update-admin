@@ -15,6 +15,8 @@ import {
   SEED_CUSTOMERS
 } from './js/data-store.js';
 
+import { handleAdminLoginSubmit, checkAdminPersistentLogin, adminLogout as authAdminLogout } from './js/auth.js';
+
 import { renderDashboard, renderLiveActiveUsersWidget } from './js/admin/dashboard.js';
 import { renderEmployeesView, filterEmployees, openAddEmployeeModal, openEditEmployeeModal, closeEmployeeModal, handleEmployeeFormSubmit, confirmDeleteEmployee } from './js/admin/employees.js';
 import { renderAttendanceView, filterAttendanceRecords, openMarkAttendanceModal, closeMarkAttendanceModal, handleMarkAttendanceSubmit, exportAttendanceCSV, clearAttendanceDateFilter, exportAttendancePDFReport } from './js/admin/attendance.js';
@@ -38,12 +40,35 @@ setupGlobalNavigation();
 document.addEventListener('DOMContentLoaded', () => {
   initRealtimeClock();
   setupGlobalNavigation();
+
+  checkAdminPersistentLogin((admin) => {
+    hideLoginModal();
+  }, () => {
+    showLoginModal();
+  });
+
   initFirestoreRealtimeListeners();
   switchAdminTab('dashboard');
 
   sendPresenceHeartbeat();
   setInterval(sendPresenceHeartbeat, 10000);
 });
+
+function showLoginModal() {
+  const modal = document.getElementById('admin-login-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function hideLoginModal() {
+  const modal = document.getElementById('admin-login-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+export function handleAdminLoginSubmitEvent(event) {
+  handleAdminLoginSubmit(event, (admin) => {
+    hideLoginModal();
+  });
+}
 
 // Realtime Header Clock
 function initRealtimeClock() {
@@ -399,10 +424,9 @@ export function toggleMobileSidebar() {
 
 // Admin Logout
 export function logoutAdmin() {
-  if (confirm('Are you sure you want to exit Admin Mode?')) {
-    alert('Logged out from SuperMart Admin.');
-    window.location.reload();
-  }
+  authAdminLogout(() => {
+    showLoginModal();
+  });
 }
 
 function setupGlobalNavigation() {
@@ -410,6 +434,7 @@ function setupGlobalNavigation() {
   window.switchAdminTab = switchAdminTab;
   window.toggleMobileSidebar = toggleMobileSidebar;
   window.logoutAdmin = logoutAdmin;
+  window.handleAdminLoginSubmitEvent = handleAdminLoginSubmitEvent;
 
   // Employee functions
   window.filterEmployees = filterEmployees;
