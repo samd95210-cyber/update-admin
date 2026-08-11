@@ -56,12 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function showLoginModal() {
   const modal = document.getElementById('admin-login-modal');
-  if (modal) modal.classList.remove('hidden');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+  }
 }
 
 function hideLoginModal() {
   const modal = document.getElementById('admin-login-modal');
-  if (modal) modal.classList.add('hidden');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
 }
 
 export function handleAdminLoginSubmitEvent(event) {
