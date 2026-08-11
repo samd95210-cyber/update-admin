@@ -1,0 +1,216 @@
+{
+  "entities": {
+    "Admin": {
+      "title": "Admin",
+      "description": "Store Administrator user record",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "name", "phone"]
+    },
+    "Employee": {
+      "title": "Employee",
+      "description": "Store staff member record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "empId": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string" },
+        "designation": { "type": "string" },
+        "status": { "type": "string" },
+        "baseSalary": { "type": "number" },
+        "joiningDate": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "bankName": { "type": "string" },
+        "accNumber": { "type": "string" },
+        "ifscCode": { "type": "string" }
+      },
+      "required": ["empId", "name", "phone", "role"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Employee daily punch record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "empId": { "type": "string" },
+        "empName": { "type": "string" },
+        "date": { "type": "string" },
+        "checkInTime": { "type": "string" },
+        "checkOutTime": { "type": "string" },
+        "status": { "type": "string" },
+        "workHours": { "type": "number" },
+        "overtimeHours": { "type": "number" },
+        "location": { "type": "string" }
+      },
+      "required": ["empId", "date", "status"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Inventory product item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sku": { "type": "string" },
+        "barcode": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "buyingPrice": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "stockQty": { "type": "number" },
+        "minStockAlert": { "type": "number" },
+        "unit": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["sku", "name", "category", "sellingPrice", "stockQty"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product category taxonomy",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "productCount": { "type": "number" }
+      },
+      "required": ["name"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "POS billing sale transaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "invoiceNumber": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "items": { "type": "string" },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "gstTax": { "type": "number" },
+        "grandTotal": { "type": "number" },
+        "paymentMode": { "type": "string" },
+        "cashierId": { "type": "string" },
+        "cashierName": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["invoiceNumber", "grandTotal", "paymentMode"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Registered shop customer profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "totalPurchases": { "type": "number" },
+        "totalSpent": { "type": "number" },
+        "loyaltyPoints": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "phone"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Shop operating expense voucher",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "category": { "type": "string" },
+        "title": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "paymentMode": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["category", "title", "amount", "date"]
+    },
+    "StockLog": {
+      "title": "StockLog",
+      "description": "Inbound and outbound inventory stock transaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "quantity": { "type": "number" },
+        "supplier": { "type": "string" },
+        "invoiceNumber": { "type": "string" },
+        "reason": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["type", "productId", "quantity", "date"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Shop and GST tax configuration",
+      "type": "object",
+      "properties": {
+        "shopName": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "gstin": { "type": "string" },
+        "gstPercentage": { "type": "number" },
+        "currencySymbol": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "receiptFooter": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Collection of admin users"
+    },
+    "/employees/{empId}": {
+      "schema": { "$ref": "#/entities/Employee" },
+      "description": "Collection of shop employees"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "Collection of attendance records"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Collection of inventory products"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Collection of product categories"
+    },
+    "/sales/{saleId}": {
+      "schema": { "$ref": "#/entities/Sale" },
+      "description": "Collection of POS billing sales"
+    },
+    "/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/Customer" },
+      "description": "Collection of shop customers"
+    },
+    "/expenses/{expenseId}": {
+      "schema": { "$ref": "#/entities/Expense" },
+      "description": "Collection of shop operational expenses"
+    },
+    "/stock/{stockId}": {
+      "schema": { "$ref": "#/entities/StockLog" },
+      "description": "Collection of stock movements"
+    },
+    "/settings/store": {
+      "schema": { "$ref": "#/entities/Settings" },
+      "description": "Store settings document"
+    }
+  }
+}

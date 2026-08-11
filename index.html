@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SuperMart Retail — Shop Management & POS Admin Panel</title>
+
+  <!-- Google Fonts & FontAwesome 6 Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Pure Custom Stylesheet & ES Module Controller -->
+  <link rel="stylesheet" href="/style.css" />
+  <script type="module" src="/script.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex">
+
+  <!-- ================================================================== -->
+  <!-- SIDEBAR NAVIGATION DRAWER                                          -->
+  <!-- ================================================================== -->
+  <aside id="app-sidebar" class="w-64 bg-slate-900/95 border-r border-slate-800/80 flex flex-col justify-between fixed lg:static inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out">
+    
+    <!-- Top Brand & Admin Profile Header -->
+    <div class="p-4 border-b border-slate-800/80 space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/30 font-black text-xl">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <div>
+          <h1 id="header-shop-title" class="font-black text-white text-base tracking-tight font-display">SuperMart Retail</h1>
+          <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2 py-0.5 rounded-full flex items-center gap-1 w-fit mt-0.5">
+            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Admin Panel Live
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Menu Navigation Links -->
+    <nav class="flex-1 p-3 space-y-1 overflow-y-auto text-xs font-semibold">
+      <button onclick="switchAdminTab('dashboard')" data-tab="dashboard" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-chart-line text-base w-5 text-center"></i> <span>Dashboard</span>
+      </button>
+
+      <button onclick="switchAdminTab('employees')" data-tab="employees" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-users text-base w-5 text-center"></i> <span>Employees</span>
+      </button>
+
+      <button onclick="switchAdminTab('attendance')" data-tab="attendance" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-user-clock text-base w-5 text-center"></i> <span>Attendance</span>
+      </button>
+
+      <button onclick="switchAdminTab('pos')" data-tab="pos" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-cart-shopping text-base w-5 text-center text-emerald-400"></i> <span class="text-emerald-400 font-bold">POS (Billing)</span>
+      </button>
+
+      <button onclick="switchAdminTab('products')" data-tab="products" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-box text-base w-5 text-center"></i> <span>Products</span>
+      </button>
+
+      <button onclick="switchAdminTab('categories')" data-tab="categories" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-layer-group text-base w-5 text-center"></i> <span>Categories</span>
+      </button>
+
+      <button onclick="switchAdminTab('stock')" data-tab="stock" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-truck-ramp-box text-base w-5 text-center"></i> <span>Stock Movement</span>
+      </button>
+
+      <button onclick="switchAdminTab('sales')" data-tab="sales" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-receipt text-base w-5 text-center"></i> <span>Sales History</span>
+      </button>
+
+      <button onclick="switchAdminTab('expenses')" data-tab="expenses" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-wallet text-base w-5 text-center"></i> <span>Expenses</span>
+      </button>
+
+      <button onclick="switchAdminTab('customers')" data-tab="customers" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-address-book text-base w-5 text-center"></i> <span>Customers</span>
+      </button>
+
+      <button onclick="switchAdminTab('reports')" data-tab="reports" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-chart-pie text-base w-5 text-center"></i> <span>Reports & P&L</span>
+      </button>
+
+      <button onclick="switchAdminTab('settings')" data-tab="settings" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-gear text-base w-5 text-center"></i> <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- Logout Footer -->
+    <div class="p-3 border-t border-slate-800/80">
+      <button onclick="logoutAdmin()" class="w-full bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-right-from-bracket"></i> <span>Exit Admin Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================================================================== -->
+  <!-- MAIN MAIN WORKSPACE CONTENT CONTAINER                              -->
+  <!-- ================================================================== -->
+  <main class="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
+    
+    <!-- Top Header Navigation Bar -->
+    <header class="bg-slate-900/80 border-b border-slate-800/80 p-3.5 px-4 sticky top-0 z-40 flex items-center justify-between backdrop-blur-md">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <div>
+          <h2 id="header-breadcrumb-title" class="font-extrabold text-white text-sm tracking-tight font-display">Shop Dashboard & Overview</h2>
+          <span class="text-[10px] text-slate-400 font-medium">SuperMart Retail Admin Control System</span>
+        </div>
+      </div>
+
+      <!-- Header Right Shortcuts & Realtime Clock -->
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2 bg-emerald-950/70 border border-emerald-500/30 text-emerald-300 px-3 py-1 rounded-full text-xs font-bold shadow-sm shadow-emerald-950/50">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span id="header-live-active-count">1 Online</span>
+        </div>
+
+        <div class="hidden sm:flex flex-col items-end">
+          <span id="header-clock" class="font-mono font-bold text-emerald-400 text-xs">00:00:00 PM</span>
+          <span id="header-date" class="text-[10px] text-slate-400 font-semibold">Today</span>
+        </div>
+
+        <button onclick="switchAdminTab('pos')" class="btn btn-emerald py-1.5 px-3 text-xs flex items-center gap-1.5 font-bold">
+          <i class="fa-solid fa-cash-register"></i> <span class="hidden sm:inline">+ Open POS Billing</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content View Panels -->
+    <div class="p-4 sm:p-6 flex-1 space-y-6">
+
+      <!-- ================================================================ -->
+      <!-- VIEW 1: DASHBOARD                                                -->
+      <!-- ================================================================ -->
+      <div id="view-dashboard" class="admin-view-panel space-y-6">
+        <!-- Stat KPI Cards Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          <div class="glass-card p-3.5 rounded-2xl border-slate-800 bg-slate-900/90">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Today's Sales</span>
+            <div id="dash-metric-today-sales" class="text-xl font-black text-emerald-400 mt-1">₹0</div>
+            <span id="dash-metric-today-orders" class="text-[10px] text-slate-400 font-medium mt-0.5 block">0 Orders</span>
+          </div>
+
+          <div class="glass-card p-3.5 rounded-2xl border-slate-800 bg-slate-900/90">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Total Revenue</span>
+            <div id="dash-metric-total-rev" class="text-xl font-black text-indigo-400 mt-1">₹0</div>
+            <span class="text-[10px] text-slate-400 font-medium mt-0.5 block">Lifetime Billing</span>
+          </div>
+
+          <div class="glass-card p-3.5 rounded-2xl border-slate-800 bg-slate-900/90">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Staff Attendance</span>
+            <div id="dash-metric-present-emps" class="text-xl font-black text-white mt-1">0 On Duty</div>
+            <span id="dash-metric-total-emps" class="text-[10px] text-slate-400 font-medium mt-0.5 block">0 Total</span>
+          </div>
+
+          <div class="glass-card p-3.5 rounded-2xl border-slate-800 bg-slate-900/90">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Stock Alerts</span>
+            <div id="dash-metric-low-stock" class="text-xl font-black text-amber-400 mt-1">0 Items</div>
+            <span id="dash-metric-out-stock" class="text-[10px] text-rose-400 font-bold mt-0.5 block">0 Out of Stock</span>
+          </div>
+
+          <!-- Live Online Users Stat Card -->
+          <div class="glass-card p-3.5 rounded-2xl border-emerald-500/30 bg-slate-900/90 shadow-lg shadow-emerald-950/30">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Live Online</span>
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+            </div>
+            <div id="dash-metric-live-users" class="text-xl font-black text-emerald-400 mt-1">1 Active</div>
+            <span id="dash-metric-live-details" class="text-[10px] text-slate-400 font-medium mt-0.5 block">0 Guests • 1 Admin</span>
+          </div>
+        </div>
+
+        <!-- Dashboard Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Recent Sales Invoices Table -->
+          <div class="lg:col-span-2 glass-card space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+              <h3 class="font-extrabold text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-indigo-400"></i> Recent Sales Invoices
+              </h3>
+              <button onclick="switchAdminTab('sales')" class="text-[11px] text-indigo-400 hover:underline font-bold">View All</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="text-[10px] font-extrabold uppercase text-slate-400 bg-slate-900/80">
+                  <tr>
+                    <th class="py-2 px-3">Invoice</th>
+                    <th class="py-2 px-3">Customer</th>
+                    <th class="py-2 px-3">Items</th>
+                    <th class="py-2 px-3">Amount</th>
+                    <th class="py-2 px-3">Mode</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-sales-table"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Side Widgets: Live Active Users, Attendance & Inventory Alerts -->
+          <div class="space-y-4">
+            <!-- Realtime Live Active Users Widget -->
+            <div class="glass-card space-y-3 border-emerald-500/30 bg-slate-900/90">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <h3 class="font-extrabold text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  Live Active Users
+                </h3>
+                <span id="dash-live-users-badge" class="text-[10px] bg-emerald-500/20 text-emerald-300 font-extrabold px-2 py-0.5 rounded-full border border-emerald-500/30">1 Active</span>
+              </div>
+              <div id="dash-live-users-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Attendance Widget -->
+            <div class="glass-card space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <h3 class="font-extrabold text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-user-check text-emerald-400"></i> Today's Attendance
+                </h3>
+                <button onclick="switchAdminTab('attendance')" class="text-[11px] text-indigo-400 hover:underline font-bold">Details</button>
+              </div>
+              <div id="dash-recent-attendance-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Stock Alerts Widget -->
+            <div class="glass-card space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <h3 class="font-extrabold text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Low Stock Warning
+                </h3>
+                <button onclick="switchAdminTab('products')" class="text-[11px] text-indigo-400 hover:underline font-bold">Restock</button>
+              </div>
+              <div id="dash-low-stock-list" class="space-y-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 2: EMPLOYEES                                                -->
+      <!-- ================================================================ -->
+      <div id="view-employees" class="admin-view-panel hidden space-y-4">
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Staff</span>
+              <span id="emp-stat-total" class="text-lg font-black text-white">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Active Employees</span>
+              <span id="emp-stat-active" class="text-lg font-black text-emerald-400">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">On Leave</span>
+              <span id="emp-stat-leave" class="text-lg font-black text-amber-400">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-plane-departure"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions & Filters Bar -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div class="flex gap-2 flex-1">
+            <input type="text" id="emp-search-input" oninput="filterEmployees()" placeholder="Search employee name or ID..." class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1">
+            <select id="emp-status-filter" onchange="filterEmployees()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none">
+              <option value="All">All Status</option>
+              <option value="Active">Active</option>
+              <option value="On Leave">On Leave</option>
+            </select>
+          </div>
+          <button onclick="openAddEmployeeModal()" class="btn btn-indigo py-2 text-xs font-bold">
+            <i class="fa-solid fa-user-plus"></i> + Add Employee
+          </button>
+        </div>
+
+        <!-- Employee Cards Grid -->
+        <div id="emp-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 3: ATTENDANCE                                               -->
+      <!-- ================================================================ -->
+      <div id="view-attendance" class="admin-view-panel hidden space-y-4">
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Present Today</span>
+              <span id="att-stat-present" class="text-lg font-black text-emerald-400">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Late Arrival</span>
+              <span id="att-stat-late" class="text-lg font-black text-amber-400">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Absent / Leave</span>
+              <span id="att-stat-absent" class="text-lg font-black text-rose-400">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-user-xmark"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div class="flex gap-2 flex-1 flex-wrap">
+            <input type="date" id="att-date-filter" onchange="filterAttendanceRecords()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <button onclick="clearAttendanceDateFilter()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition" title="View all attendance records line-by-line across all dates">
+              <i class="fa-solid fa-calendar-days text-indigo-400"></i> All Dates
+            </button>
+            <input type="text" id="att-search-input" oninput="filterAttendanceRecords()" placeholder="Search staff name..." class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1">
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="openMarkAttendanceModal()" class="btn btn-emerald py-2 text-xs font-bold">
+              <i class="fa-solid fa-circle-check"></i> Mark Attendance
+            </button>
+            <button onclick="exportAttendancePDFReport()" class="btn btn-indigo py-2 text-xs font-bold" title="Generate Master PDF Report for all dates">
+              <i class="fa-solid fa-file-pdf"></i> Master PDF Report
+            </button>
+            <button onclick="exportAttendanceCSV()" class="btn btn-secondary py-2 text-xs font-bold">
+              <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="glass-card overflow-x-auto p-0">
+          <table class="w-full text-left text-xs">
+            <thead class="text-[10px] font-extrabold uppercase text-slate-400 bg-slate-900/90 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">EMP ID</th>
+                <th class="py-3 px-3">Staff Name</th>
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">In Time</th>
+                <th class="py-3 px-3">Out Time</th>
+                <th class="py-3 px-3">Work Hours</th>
+                <th class="py-3 px-3">Status</th>
+              </tr>
+            </thead>
+            <tbody id="att-records-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 4: POS BILLING COUNTER                                      -->
+      <!-- ================================================================ -->
+      <div id="view-pos" class="admin-view-panel hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- POS Left: Product Catalog & Category Chips -->
+          <div class="lg:col-span-2 space-y-4">
+            <!-- Search & Barcode Scan Input -->
+            <div class="flex gap-2">
+              <input type="text" id="pos-search-input" oninput="searchPosCatalog()" placeholder="Search product name, SKU, or Barcode..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1">
+            </div>
+
+            <!-- Category Filter Chips -->
+            <div id="pos-categories-chips" class="flex items-center gap-2 overflow-x-auto pb-1"></div>
+
+            <!-- Catalog Grid -->
+            <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+          </div>
+
+          <!-- POS Right: Active Billing Cart Panel -->
+          <div class="glass-card space-y-4 flex flex-col justify-between h-fit">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <h3 class="font-black text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-cart-shopping text-emerald-400"></i> Active Cart
+                </h3>
+                <button onclick="clearCart()" class="text-[10px] text-rose-400 font-bold hover:underline">Clear</button>
+              </div>
+
+              <!-- Customer Info Form -->
+              <div class="grid grid-cols-2 gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-xs">
+                <input type="text" id="pos-cust-name" placeholder="Customer Name" value="Walk-in Customer" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none">
+                <input type="tel" id="pos-cust-phone" placeholder="Mobile Number" value="9999999999" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none">
+              </div>
+
+              <!-- Cart List -->
+              <div id="pos-cart-items-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <!-- Cart Summary Calculation & Checkout -->
+            <div class="pt-3 border-t border-slate-800 space-y-2.5">
+              <div class="space-y-1.5 text-xs text-slate-300">
+                <div class="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span id="pos-subtotal-val" class="font-bold">₹0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>Discount (%):</span>
+                  <input type="number" id="pos-discount-input" min="0" max="100" value="0" oninput="handleDiscountChange()" class="w-16 bg-slate-900 border border-slate-800 text-right text-xs rounded px-2 py-1 text-white font-bold">
+                </div>
+                <div class="flex justify-between items-center">
+                  <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked onchange="toggleGstTax()" class="rounded bg-slate-900 border-slate-800 text-emerald-500">
+                    <span>GST Tax (5%):</span>
+                  </label>
+                  <span id="pos-tax-val" class="font-bold text-slate-400">+₹0</span>
+                </div>
+                <div class="flex justify-between items-center text-sm font-black border-t border-slate-800 pt-2 text-white">
+                  <span>Grand Total:</span>
+                  <span id="pos-grandtotal-val" class="text-emerald-400 text-lg">₹0</span>
+                </div>
+              </div>
+
+              <!-- Payment Mode Selection -->
+              <div class="flex gap-2">
+                <select id="pos-payment-mode" class="bg-slate-900 border border-slate-800 text-white font-bold text-xs rounded-xl px-3 py-2 flex-1 focus:outline-none">
+                  <option value="Cash">Cash Payment</option>
+                  <option value="UPI">UPI / QR Scan</option>
+                  <option value="Card">Credit/Debit Card</option>
+                </select>
+              </div>
+
+              <button onclick="processCheckoutSale()" class="btn btn-emerald w-full py-3 text-sm font-extrabold shadow-lg shadow-emerald-600/30">
+                <i class="fa-solid fa-print"></i> Complete & Print Receipt
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 5: PRODUCTS & INVENTORY                                     -->
+      <!-- ================================================================ -->
+      <div id="view-products" class="admin-view-panel hidden space-y-4">
+        <!-- KPI Stat Cards -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Items</span>
+              <span id="prod-stat-total" class="text-lg font-black text-white">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Low Stock Alert</span>
+              <span id="prod-stat-low" class="text-lg font-black text-amber-400">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Out of Stock</span>
+              <span id="prod-stat-out" class="text-lg font-black text-rose-400">0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div class="flex gap-2 flex-1 flex-wrap">
+            <input type="text" id="prod-search-input" oninput="filterProductsList()" placeholder="Search product name, SKU..." class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1">
+            <select id="prod-category-filter" onchange="filterProductsList()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none"></select>
+            <select id="prod-stock-filter" onchange="filterProductsList()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none">
+              <option value="All">All Stock Status</option>
+              <option value="Low">Low Stock</option>
+              <option value="Out">Out of Stock</option>
+            </select>
+          </div>
+          <button onclick="openAddProductModal()" class="btn btn-indigo py-2 text-xs font-bold">
+            <i class="fa-solid fa-plus"></i> + Add Product
+          </button>
+        </div>
+
+        <div id="products-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 6: CATEGORIES                                               -->
+      <!-- ================================================================ -->
+      <div id="view-categories" class="admin-view-panel hidden space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="font-extrabold text-white text-xs uppercase tracking-wider">Product Categories</h3>
+          <button onclick="openAddCategoryModal()" class="btn btn-indigo py-2 text-xs font-bold">
+            <i class="fa-solid fa-folder-plus"></i> + Add Category
+          </button>
+        </div>
+        <div id="categories-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 7: STOCK IN & STOCK OUT                                     -->
+      <!-- ================================================================ -->
+      <div id="view-stock" class="admin-view-panel hidden space-y-4">
+        <!-- KPI Stat Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Stock In</span>
+              <span id="stock-stat-in" class="text-lg font-black text-emerald-400">0 Units</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-arrow-down"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Stock Out</span>
+              <span id="stock-stat-out" class="text-lg font-black text-rose-400">0 Units</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-arrow-up"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div class="flex gap-2 flex-1">
+            <input type="text" id="stock-search-input" oninput="filterStockLogs()" placeholder="Search product or supplier..." class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1">
+            <select id="stock-type-filter" onchange="filterStockLogs()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none">
+              <option value="All">All Movements</option>
+              <option value="Stock In">Stock In</option>
+              <option value="Stock Out">Stock Out</option>
+            </select>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openAddStockInModal()" class="btn btn-emerald py-2 text-xs font-bold">
+              <i class="fa-solid fa-arrow-down"></i> + Stock In
+            </button>
+            <button onclick="openStockOutModal()" class="btn btn-rose py-2 text-xs font-bold">
+              <i class="fa-solid fa-arrow-up"></i> - Stock Out
+            </button>
+          </div>
+        </div>
+
+        <div class="glass-card overflow-x-auto p-0">
+          <table class="w-full text-left text-xs">
+            <thead class="text-[10px] font-extrabold uppercase text-slate-400 bg-slate-900/90 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">Type</th>
+                <th class="py-3 px-3">Product Name</th>
+                <th class="py-3 px-3">Quantity</th>
+                <th class="py-3 px-3">Supplier</th>
+                <th class="py-3 px-3">Invoice No</th>
+                <th class="py-3 px-3">Reason / Notes</th>
+              </tr>
+            </thead>
+            <tbody id="stock-logs-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 8: SALES HISTORY                                            -->
+      <!-- ================================================================ -->
+      <div id="view-sales" class="admin-view-panel hidden space-y-4">
+        <!-- KPI Stat Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Invoices</span>
+              <span id="sales-stat-count" class="text-lg font-black text-white">0 Orders</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+          </div>
+          <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Sales Revenue</span>
+              <span id="sales-stat-total-amt" class="text-lg font-black text-emerald-400">₹0</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div class="flex gap-2 flex-1">
+            <input type="text" id="sales-search-input" oninput="filterSalesHistory()" placeholder="Search Invoice No or Customer Phone..." class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1">
+            <select id="sales-paymode-filter" onchange="filterSalesHistory()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none">
+              <option value="All">All Payment Modes</option>
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Card">Card</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="glass-card overflow-x-auto p-0">
+          <table class="w-full text-left text-xs">
+            <thead class="text-[10px] font-extrabold uppercase text-slate-400 bg-slate-900/90 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Invoice No</th>
+                <th class="py-3 px-3">Date & Time</th>
+                <th class="py-3 px-3">Customer</th>
+                <th class="py-3 px-3">Items</th>
+                <th class="py-3 px-3">Grand Total</th>
+                <th class="py-3 px-3">Payment</th>
+                <th class="py-3 px-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="sales-history-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 9: EXPENSES                                                 -->
+      <!-- ================================================================ -->
+      <div id="view-expenses" class="admin-view-panel hidden space-y-4">
+        <!-- KPI Stat Card -->
+        <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+          <div>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Store Expenses</span>
+            <span id="expense-stat-total" class="text-lg font-black text-rose-400">₹0</span>
+          </div>
+          <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div class="flex gap-2 flex-1">
+            <input type="text" id="expense-search-input" oninput="filterExpensesList()" placeholder="Search expense title..." class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1">
+            <select id="expense-category-filter" onchange="filterExpensesList()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 font-semibold focus:outline-none">
+              <option value="All">All Categories</option>
+              <option value="Rent">Rent</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Salary">Salary</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <button onclick="openAddExpenseModal()" class="btn btn-rose py-2 text-xs font-bold">
+            <i class="fa-solid fa-plus"></i> + Log Expense
+          </button>
+        </div>
+
+        <div class="glass-card overflow-x-auto p-0">
+          <table class="w-full text-left text-xs">
+            <thead class="text-[10px] font-extrabold uppercase text-slate-400 bg-slate-900/90 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">Category</th>
+                <th class="py-3 px-3">Title / Details</th>
+                <th class="py-3 px-3">Amount</th>
+                <th class="py-3 px-3">Payment Mode</th>
+                <th class="py-3 px-3">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="expenses-records-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 10: CUSTOMERS                                               -->
+      <!-- ================================================================ -->
+      <div id="view-customers" class="admin-view-panel hidden space-y-4">
+        <!-- KPI Stat Card -->
+        <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-slate-800">
+          <div>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Registered Customers</span>
+            <span id="cust-stat-total" class="text-lg font-black text-indigo-400">0</span>
+          </div>
+          <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-users"></i>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <input type="text" id="cust-search-input" oninput="filterCustomersList()" placeholder="Search customer name or phone..." class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1">
+          <button onclick="openAddCustomerModal()" class="btn btn-indigo py-2 text-xs font-bold">
+            <i class="fa-solid fa-user-plus"></i> + Add Customer
+          </button>
+        </div>
+        <div id="customers-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 11: REPORTS & P&L                                           -->
+      <!-- ================================================================ -->
+      <div id="view-reports" class="admin-view-panel hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="font-extrabold text-white text-xs uppercase tracking-wider">Executive Shop Reports & P&L Statement</h3>
+          <button onclick="exportFullShopReport()" class="btn btn-emerald py-2 text-xs font-bold">
+            <i class="fa-solid fa-download"></i> Download Report
+          </button>
+        </div>
+
+        <!-- Profit & Loss Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass-card space-y-1">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase">Gross Revenue</span>
+            <div id="report-sales-rev" class="text-xl font-black text-emerald-400">₹0</div>
+          </div>
+          <div class="glass-card space-y-1">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase">Cost of Goods (COGS)</span>
+            <div id="report-cogs" class="text-xl font-black text-slate-300">₹0</div>
+          </div>
+          <div class="glass-card space-y-1">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase">Store Expenses</span>
+            <div id="report-expenses" class="text-xl font-black text-rose-400">₹0</div>
+          </div>
+          <div class="glass-card space-y-1 bg-slate-900 border-indigo-500/40">
+            <span class="text-[10px] font-extrabold text-indigo-300 uppercase">Estimated Net Profit</span>
+            <div id="report-net-profit" class="text-2xl font-black text-emerald-400">₹0</div>
+          </div>
+        </div>
+
+        <!-- Stock Valuation Report -->
+        <div class="glass-card space-y-3">
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider border-b border-slate-800 pb-2">Inventory Stock Valuation Summary</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <span class="text-slate-400">Total Stock Items:</span>
+              <div id="report-stock-qty" class="text-lg font-bold text-white mt-0.5">0 Units</div>
+            </div>
+            <div>
+              <span class="text-slate-400">Inventory Cost Value:</span>
+              <div id="report-stock-cost" class="text-lg font-bold text-indigo-400 mt-0.5">₹0</div>
+            </div>
+            <div>
+              <span class="text-slate-400">Inventory Retail Value:</span>
+              <div id="report-stock-retail" class="text-lg font-bold text-emerald-400 mt-0.5">₹0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- VIEW 12: SETTINGS                                                -->
+      <!-- ================================================================ -->
+      <div id="view-settings" class="admin-view-panel hidden space-y-6">
+        <form onsubmit="handleSaveSettingsSubmit(event)" class="glass-card space-y-4 max-w-xl">
+          <h3 class="font-bold text-white text-xs uppercase tracking-wider pb-2 border-b border-slate-800">Store Identity & GST Settings</h3>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Shop Name</label>
+              <input type="text" id="setting-shop-name" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-bold">
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Shop Address</label>
+              <input type="text" id="setting-address" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Phone Number</label>
+                <input type="tel" id="setting-phone" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">GST Tax Rate (%)</label>
+                <input type="number" id="setting-gst-pct" required min="0" max="28" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">GSTIN Registration Number</label>
+              <input type="text" id="setting-gstin" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono uppercase">
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Thermal Receipt Footer Message</label>
+              <input type="text" id="setting-receipt-footer" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-indigo py-2.5 px-6 text-xs font-bold">
+            Save Settings
+          </button>
+        </form>
+
+        <div class="glass-card border-rose-500/30 max-w-xl space-y-3">
+          <h4 class="font-bold text-rose-400 text-xs uppercase tracking-wider">Reset Local Data</h4>
+          <p class="text-xs text-slate-400">Restore factory sample seed data for testing and demonstration.</p>
+          <button onclick="resetAllShopData()" class="btn btn-rose py-2 text-xs font-bold">
+            Reset Data to Factory Default
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================================================================== -->
+  <!-- MODALS CONTAINER                                                   -->
+  <!-- ================================================================== -->
+
+  <!-- Employee Modal -->
+  <div id="emp-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 id="emp-modal-title" class="font-bold text-white text-sm">Add Staff Member</h3>
+        <button onclick="closeEmployeeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="emp-form" onsubmit="handleEmployeeFormSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Full Name</label>
+          <input type="text" id="emp-input-name" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Mobile Phone</label>
+            <input type="tel" id="emp-input-phone" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Role / Designation</label>
+            <select id="emp-input-role" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+              <option value="Store Manager">Store Manager</option>
+              <option value="Cashier">Cashier</option>
+              <option value="Salesman">Salesman</option>
+              <option value="Stock Supervisor">Stock Supervisor</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Monthly Base Salary (₹)</label>
+            <input type="number" id="emp-input-salary" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Status</label>
+            <select id="emp-input-status" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+              <option value="Active">Active</option>
+              <option value="On Leave">On Leave</option>
+            </select>
+          </div>
+        </div>
+        <div class="space-y-2 pt-2 border-t border-slate-800">
+          <label class="block font-bold text-indigo-400">Bank Details</label>
+          <input type="text" id="emp-input-bank-name" placeholder="Bank Name (e.g. SBI)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" id="emp-input-bank-acc" placeholder="Account Number" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+            <input type="text" id="emp-input-bank-ifsc" placeholder="IFSC Code" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono uppercase">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-indigo w-full py-2.5 text-xs font-bold">Save Employee</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mark Attendance Modal -->
+  <div id="att-mark-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Mark Staff Attendance</h3>
+        <button onclick="closeMarkAttendanceModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleMarkAttendanceSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Select Employee</label>
+          <select id="att-mark-emp-select" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Date</label>
+            <input type="date" id="att-mark-date" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Attendance Status</label>
+            <select id="att-mark-status" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+              <option value="Present">Present</option>
+              <option value="Late">Late</option>
+              <option value="On Leave">On Leave</option>
+              <option value="Absent">Absent</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Check In Time</label>
+            <input type="text" id="att-mark-in-time" value="09:00 AM" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Check Out Time</label>
+            <input type="text" id="att-mark-out-time" value="07:00 PM" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-emerald w-full py-2.5 text-xs font-bold">Save Punch Record</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Modal -->
+  <div id="prod-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 id="prod-modal-title" class="font-bold text-white text-sm">Add Inventory Product</h3>
+        <button onclick="closeProductModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="prod-form" onsubmit="handleProductFormSubmit(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">SKU Code</label>
+            <input type="text" id="prod-input-sku" required placeholder="e.g. GRO-101" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono uppercase">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Barcode (Optional)</label>
+            <input type="text" id="prod-input-barcode" placeholder="e.g. 890103080001" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Product Title</label>
+          <input type="text" id="prod-input-name" required placeholder="e.g. Fortune Sunflower Oil 1L" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Category</label>
+            <select id="prod-input-cat" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"></select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Unit Type</label>
+            <input type="text" id="prod-input-unit" placeholder="e.g. 1L Pouch / 5kg Pack" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Buying Price (₹)</label>
+            <input type="number" id="prod-input-buy-price" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Selling Price (₹)</label>
+            <input type="number" id="prod-input-sell-price" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Stock Quantity</label>
+            <input type="number" id="prod-input-stock" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Low Stock Alert Min</label>
+            <input type="number" id="prod-input-min-alert" value="5" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+        </div>
+
+        <!-- Product Photo / Image Input Section -->
+        <div class="space-y-2 pt-2 border-t border-slate-800">
+          <label class="block font-bold text-indigo-400">Product Photo / Image</label>
+          <div class="flex items-center gap-3">
+            <div id="prod-image-preview" class="w-14 h-14 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0">
+              <i class="fa-solid fa-image text-slate-600 text-xl"></i>
+            </div>
+            <div class="flex-1 space-y-1.5">
+              <input type="text" id="prod-input-image" placeholder="Image URL (e.g. https://...)" oninput="updateProductImagePreview(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-white text-xs">
+              <div class="flex items-center gap-2">
+                <label class="btn bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 px-3 py-1 rounded-lg text-[11px] font-bold cursor-pointer transition">
+                  <i class="fa-solid fa-upload mr-1"></i> Upload Photo File
+                  <input type="file" id="prod-file-input" accept="image/*" onchange="handleProductPhotoFileUpload(event)" class="hidden">
+                </label>
+                <span class="text-[10px] text-slate-400">or paste image web link</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-indigo w-full py-2.5 text-xs font-bold">Save Product</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <div id="cat-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Add Category</h3>
+        <button onclick="closeCategoryModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="cat-form" onsubmit="handleCategoryFormSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Category Name</label>
+          <input type="text" id="cat-input-name" required placeholder="e.g. Spices & Masala" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Description</label>
+          <input type="text" id="cat-input-desc" placeholder="Brief details" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Icon Class</label>
+          <input type="text" id="cat-input-icon" value="fa-box-open" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+        </div>
+        <button type="submit" class="btn btn-indigo w-full py-2.5 text-xs font-bold">Save Category</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stock In Modal -->
+  <div id="stock-in-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Inbound Stock Restock</h3>
+        <button onclick="closeAddStockInModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="stock-in-form" onsubmit="handleStockInSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Select Product</label>
+          <select id="stock-in-prod-select" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Quantity Added</label>
+            <input type="number" id="stock-in-qty" required min="1" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Date</label>
+            <input type="date" id="stock-in-date" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Supplier Name</label>
+          <input type="text" id="stock-in-supplier" placeholder="Wholesale Supplier Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Invoice Number</label>
+          <input type="text" id="stock-in-invoice" placeholder="Supplier Invoice No" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+        </div>
+        <button type="submit" class="btn btn-emerald w-full py-2.5 text-xs font-bold">Add Stock In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stock Out Modal -->
+  <div id="stock-out-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Stock Out / Removal</h3>
+        <button onclick="closeStockOutModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="stock-out-form" onsubmit="handleStockOutSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Select Product</label>
+          <select id="stock-out-prod-select" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Quantity Removed</label>
+            <input type="number" id="stock-out-qty" required min="1" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Date</label>
+            <input type="date" id="stock-out-date" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Removal Reason</label>
+          <select id="stock-out-reason" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+            <option value="Damaged Products">Damaged Products</option>
+            <option value="Returned Products">Returned Products</option>
+            <option value="Expired Stock">Expired Stock</option>
+            <option value="Manual Stock Remove">Manual Stock Remove</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-rose w-full py-2.5 text-xs font-bold">Remove Stock</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Expense Modal -->
+  <div id="expense-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Log Store Expense</h3>
+        <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="expense-form" onsubmit="handleExpenseFormSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Expense Title</label>
+          <input type="text" id="expense-title" required placeholder="e.g. Torrent Electricity Bill" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Category</label>
+            <select id="expense-category" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+              <option value="Rent">Rent</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Salary">Salary</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Amount (₹)</label>
+            <input type="number" id="expense-amount" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Payment Mode</label>
+            <select id="expense-paymode" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Date</label>
+            <input type="date" id="expense-date" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Notes (Optional)</label>
+          <input type="text" id="expense-notes" placeholder="Voucher reference details" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <button type="submit" class="btn btn-rose w-full py-2.5 text-xs font-bold">Log Expense</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Customer Modal -->
+  <div id="cust-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Add Customer Profile</h3>
+        <button onclick="closeCustomerModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="cust-form" onsubmit="handleCustomerFormSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Customer Name</label>
+          <input type="text" id="cust-input-name" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Mobile Phone</label>
+            <input type="tel" id="cust-input-phone" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Email Address</label>
+            <input type="email" id="cust-input-email" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-indigo w-full py-2.5 text-xs font-bold">Save Customer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- POS Thermal Print Receipt Modal -->
+  <div id="pos-receipt-modal" class="modal-overlay hidden">
+    <div class="modal-content space-y-4 max-w-sm">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-xs uppercase tracking-wider">Thermal Sales Receipt</h3>
+        <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Thermal Printable Container -->
+      <div id="printable-receipt" class="bg-white text-slate-900 p-4 rounded-xl space-y-3 font-mono text-[11px] shadow-inner">
+        <div class="text-center space-y-0.5 border-b border-slate-300 pb-2">
+          <h2 id="receipt-shop-name" class="font-black text-sm uppercase">SuperMart Retail</h2>
+          <p id="receipt-shop-address" class="text-[10px] text-slate-600">Shop #12-15, Prime Commercial Hub</p>
+          <p id="receipt-shop-gstin" class="text-[10px] text-slate-600 font-bold">GSTIN: 24AAAAA0000A1Z5</p>
+        </div>
+
+        <div class="space-y-0.5 text-[10px] border-b border-slate-300 pb-2">
+          <div class="flex justify-between"><span>Inv No:</span><b id="receipt-inv-no">INV-0001</b></div>
+          <div class="flex justify-between"><span>Date:</span><span id="receipt-date">00/00/0000</span></div>
+          <div class="flex justify-between"><span>Cust:</span><span id="receipt-cust">Walk-in Customer</span></div>
+          <div class="flex justify-between"><span>Payment:</span><b id="receipt-paymode">Cash</b></div>
+        </div>
+
+        <!-- Receipt Items -->
+        <div id="receipt-items-body" class="space-y-1 my-2"></div>
+
+        <div class="border-t border-slate-300 pt-2 space-y-1 font-bold">
+          <div class="flex justify-between"><span>Subtotal:</span><span id="receipt-subtotal">₹0</span></div>
+          <div class="flex justify-between text-rose-600"><span>Discount:</span><span id="receipt-discount">-₹0</span></div>
+          <div class="flex justify-between"><span>GST Tax:</span><span id="receipt-tax">+₹0</span></div>
+          <div class="flex justify-between text-sm font-black border-t border-slate-400 pt-1">
+            <span>Grand Total:</span><span id="receipt-grandtotal" class="text-emerald-700">₹0</span>
+          </div>
+        </div>
+
+        <div class="text-center text-[9px] text-slate-500 pt-2 border-t border-dashed border-slate-300">
+          <p id="receipt-footer-msg">Thank you for shopping at SuperMart!</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="printCurrentReceipt()" class="btn btn-emerald flex-1 py-2 text-xs font-bold">
+          <i class="fa-solid fa-print"></i> Print Receipt
+        </button>
+        <button onclick="closeReceiptModal()" class="btn btn-secondary py-2 text-xs font-bold">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Custom Confirmation Modal (Unblocked by iframe) -->
+  <div id="custom-confirm-modal" class="modal-overlay hidden z-50">
+    <div class="modal-content max-w-sm w-full p-5 rounded-2xl border-slate-700 bg-slate-900 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center text-lg flex-shrink-0">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h4 id="confirm-modal-title" class="font-bold text-white text-sm">Confirm Delete</h4>
+          <p id="confirm-modal-msg" class="text-xs text-slate-400 mt-0.5">Are you sure you want to delete this record?</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+        <button id="confirm-modal-cancel-btn" class="px-3.5 py-1.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-bold transition">Cancel</button>
+        <button id="confirm-modal-ok-btn" class="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-600/30 transition">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
