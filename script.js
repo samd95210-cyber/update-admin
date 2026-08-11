@@ -65,6 +65,7 @@ function hideLoginModal() {
 }
 
 export function handleAdminLoginSubmitEvent(event) {
+  if (event) event.preventDefault();
   handleAdminLoginSubmit(event, (admin) => {
     hideLoginModal();
   });
